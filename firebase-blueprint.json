@@ -1,0 +1,52 @@
+{
+  "entities": {
+    "Vehicle": {
+      "title": "Vehicle",
+      "description": "Cadastro de veículo da frota",
+      "type": "object",
+      "properties": {
+        "placa": { "type": "string" },
+        "modelo": { "type": "string" },
+        "base": { "type": "string" },
+        "status": { "type": "string" }
+      }
+    },
+    "EmailLog": {
+      "title": "EmailLog",
+      "description": "Histórico de e-mails disparados via Gmail ou sistema",
+      "type": "object",
+      "properties": {
+        "destinatario": { "type": "string" },
+        "assunto": { "type": "string" },
+        "corpo": { "type": "string" },
+        "dataEnvio": { "type": "string" }
+      }
+    },
+    "WhatsAppLog": {
+      "title": "WhatsAppLog",
+      "description": "Histórico de alertas e mensagens disparadas via WhatsApp",
+      "type": "object",
+      "properties": {
+        "destinatarioNome": { "type": "string" },
+        "telefone": { "type": "string" },
+        "mensagem": { "type": "string" },
+        "dataEnvio": { "type": "string" },
+        "status": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/vehicles/{vehicleId}": {
+      "schema": "Vehicle",
+      "description": "Coleção de veículos da frota"
+    },
+    "/emailLogs/{logId}": {
+      "schema": "EmailLog",
+      "description": "Histórico de logs de e-mail"
+    },
+    "/whatsappLogs/{logId}": {
+      "schema": "WhatsAppLog",
+      "description": "Histórico de alertas de WhatsApp"
+    }
+  }
+}

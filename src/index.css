@@ -1,0 +1,333 @@
+@import "tailwindcss";
+
+/* ---------------- LIGHT MODE (FADEL TRANSPORTES LOGISTICS STYLE) ---------------- */
+html.light {
+  color-scheme: light;
+}
+
+html.light,
+html.light body,
+html.light #root,
+html.light .min-h-screen,
+html.light main,
+html.light .app-root {
+  background-color: #ebf1f6 !important;
+  color: #0f172a !important;
+}
+
+html.light div.bg-slate-950,
+html.light .bg-slate-950 {
+  background-color: #ebf1f6 !important;
+}
+
+/* Header in Light Mode - Deep Dark Navy Top Bar like reference image */
+html.light header {
+  background-color: #0b192c !important;
+  border-bottom: 1px solid #1e293b !important;
+  color: #ffffff !important;
+}
+
+html.light header .text-white,
+html.light header .text-slate-100,
+html.light header .text-slate-200 {
+  color: #ffffff !important;
+}
+
+html.light header .text-slate-400,
+html.light header .text-slate-300 {
+  color: #94a3b8 !important;
+}
+
+html.light header input {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+  border-color: #334155 !important;
+}
+
+html.light header input::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Sidebar in Light Mode - Clean White & Dark Navy Nav Items */
+html.light aside {
+  background-color: #ffffff !important;
+  border-right: 1px solid #cbd5e1 !important;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03) !important;
+}
+
+html.light aside nav button:not(.bg-indigo-600) {
+  color: #334155 !important;
+  font-weight: 600 !important;
+}
+
+html.light aside nav button:not(.bg-indigo-600):hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+/* ==========================================================================
+   LIGHT MODE ALL CARDS & CONTAINERS OVERRIDES
+   ========================================================================== */
+html.light main .bg-slate-900,
+html.light main .bg-slate-950,
+html.light main .bg-slate-800,
+html.light main .bg-slate-850,
+html.light main [class*="bg-slate-"],
+html.light main [class*="bg-indigo-950"],
+html.light main [class*="bg-emerald-950"],
+html.light main [class*="bg-amber-950"],
+html.light main [class*="bg-red-950"],
+html.light main [class*="bg-rose-950"],
+html.light main [class*="bg-gradient-to"] {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05) !important;
+}
+
+/* Selected Active Cards in Light Mode */
+html.light main .border-indigo-500\/80,
+html.light main [class*="bg-indigo-950"] {
+  background-color: #ffffff !important;
+  border-color: #6366f1 !important;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.2) !important;
+}
+
+html.light main .border-emerald-500\/80,
+html.light main [class*="bg-emerald-950"] {
+  background-color: #ffffff !important;
+  border-color: #10b981 !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2) !important;
+}
+
+html.light main .border-amber-500\/80,
+html.light main [class*="bg-amber-950"] {
+  background-color: #ffffff !important;
+  border-color: #f59e0b !important;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2) !important;
+}
+
+html.light main .border-red-500,
+html.light main [class*="bg-red-950"],
+html.light main [class*="bg-rose-950"] {
+  background-color: #ffffff !important;
+  border-color: #f43f5e !important;
+  box-shadow: 0 4px 16px rgba(244, 63, 94, 0.2) !important;
+}
+
+/* Inner metric blocks inside cards (Disponíveis, Operação, Parados, etc.) */
+html.light main [class*="bg-slate-950\/"],
+html.light main [class*="bg-slate-800\/"],
+html.light main .p-3.5.bg-slate-950\/60,
+html.light main .p-3.bg-slate-950\/60 {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+/* Text Colors in Light Mode */
+html.light main .text-white,
+html.light main .text-slate-100,
+html.light main .text-slate-200,
+html.light main .text-slate-300 {
+  color: #0f172a !important;
+}
+
+html.light main .text-slate-400,
+html.light main .text-slate-500 {
+  color: #475569 !important;
+}
+
+/* Colored Accents & Badges in Light Mode - VIVID & HIGH-CONTRAST */
+html.light [class*="bg-emerald-500/"],
+html.light [class*="bg-emerald-600/"],
+html.light [class*="bg-emerald-950/"] {
+  background-color: #ecfdf5 !important;
+  border-color: #059669 !important;
+  color: #047857 !important;
+}
+
+html.light main .text-emerald-400,
+html.light main .text-emerald-300,
+html.light main .text-emerald-500,
+html.light main .text-emerald-600 {
+  color: #059669 !important;
+  font-weight: 800 !important;
+}
+
+html.light [class*="bg-blue-500/"],
+html.light [class*="bg-blue-600/"],
+html.light [class*="bg-blue-950/"] {
+  background-color: #eff6ff !important;
+  border-color: #2563eb !important;
+  color: #1d4ed8 !important;
+}
+
+html.light main .text-blue-400,
+html.light main .text-blue-300,
+html.light main .text-blue-500,
+html.light main .text-blue-600 {
+  color: #2563eb !important;
+  font-weight: 800 !important;
+}
+
+html.light [class*="bg-amber-500/"],
+html.light [class*="bg-amber-600/"],
+html.light [class*="bg-amber-950/"],
+html.light [class*="bg-orange-500/"] {
+  background-color: #fffbeb !important;
+  border-color: #d97706 !important;
+  color: #b45309 !important;
+}
+
+html.light main .text-amber-400,
+html.light main .text-amber-300,
+html.light main .text-amber-500,
+html.light main .text-amber-600 {
+  color: #d97706 !important;
+  font-weight: 800 !important;
+}
+
+html.light [class*="bg-rose-500/"],
+html.light [class*="bg-rose-600/"],
+html.light [class*="bg-rose-950/"],
+html.light [class*="bg-red-500/"],
+html.light [class*="bg-red-950/"] {
+  background-color: #fff1f2 !important;
+  border-color: #e11d48 !important;
+  color: #be123c !important;
+}
+
+html.light main .text-rose-400,
+html.light main .text-rose-300,
+html.light main .text-rose-500,
+html.light main .text-rose-600,
+html.light main .text-red-400,
+html.light main .text-red-500 {
+  color: #e11d48 !important;
+  font-weight: 800 !important;
+}
+
+html.light [class*="bg-indigo-500/"],
+html.light [class*="bg-indigo-600/"],
+html.light [class*="bg-indigo-950/"] {
+  background-color: #e0e7ff !important;
+  border-color: #4f46e5 !important;
+  color: #3730a3 !important;
+}
+
+html.light main .text-indigo-400,
+html.light main .text-indigo-300,
+html.light main .text-indigo-500,
+html.light main .text-indigo-600 {
+  color: #4f46e5 !important;
+  font-weight: 800 !important;
+}
+
+/* Solid Colored Buttons (Keep white text) */
+html.light main button.bg-indigo-600,
+html.light main button.bg-blue-600,
+html.light main button.bg-rose-600,
+html.light main button.bg-emerald-600,
+html.light main button.bg-amber-500,
+html.light main .bg-indigo-600 *,
+html.light main .bg-blue-600 *,
+html.light main .bg-rose-600 *,
+html.light main .bg-emerald-600 * {
+  color: #ffffff !important;
+}
+
+/* Solid Icon Badge Containers in Light Mode */
+html.light .p-2\.5.rounded-2xl.border-indigo-500\/30,
+html.light .w-11.h-11.bg-gradient-to-tr {
+  background-color: #4f46e5 !important;
+  color: #ffffff !important;
+  border-color: #4338ca !important;
+}
+
+html.light .p-2\.5.rounded-2xl.border-emerald-500\/30 {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+  border-color: #059669 !important;
+}
+
+html.light .p-2\.5.rounded-2xl.border-amber-500\/30 {
+  background-color: #f59e0b !important;
+  color: #ffffff !important;
+  border-color: #d97706 !important;
+}
+
+html.light .p-2\.5.rounded-2xl.border-rose-500\/30 {
+  background-color: #f43f5e !important;
+  color: #ffffff !important;
+  border-color: #e11d48 !important;
+}
+
+/* White icons inside solid badges in Light Mode */
+html.light .p-2\.5.rounded-2xl svg {
+  color: #ffffff !important;
+}
+
+/* Operational Filter bar container & unselected buttons in Light Mode */
+html.light .flex.items-center.gap-1\.5.p-1.bg-slate-950 {
+  background-color: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light button:not(.bg-indigo-600) > span.bg-slate-800 {
+  background-color: #cbd5e1 !important;
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+/* Form Inputs, Selects & Textareas in Light Mode */
+html.light input,
+html.light select,
+html.light textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #64748b !important;
+}
+
+/* Recharts Tooltips and Legends in Light Mode */
+html.light .recharts-default-tooltip {
+  background-color: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+}
+
+/* Tables in Light Mode */
+html.light table {
+  background-color: #ffffff !important;
+}
+
+html.light table th {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  border-bottom: 2px solid #cbd5e1 !important;
+}
+
+html.light table td {
+  border-bottom: 1px solid #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+html.light table tbody tr:hover {
+  background-color: #f1f5f9 !important;
+}
+
+/* Modal Backdrops */
+html.light .fixed.inset-0.bg-slate-950\/80 {
+  background-color: rgba(11, 25, 44, 0.6) !important;
+}
+
+
+

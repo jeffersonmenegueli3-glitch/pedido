@@ -1,0 +1,8 @@
+{
+  "name": "FleetMaster - Sistema de Controle de Frota e Manutenção",
+  "description": "Sistema completo para gestão de frota, manutenção preventiva e corretiva, controle orçamentário, alertas automáticos de veículos parados e dashboard analítico.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

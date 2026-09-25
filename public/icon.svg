@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="100" fill="#0f172a"/>
+  <rect x="20" y="20" width="472" height="472" rx="80" fill="url(#grad)" stroke="#4f46e5" stroke-width="8"/>
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#311b92"/>
+    </linearGradient>
+  </defs>
+  <!-- Fleet Icon -->
+  <path d="M120 320h272M120 200h180l60 60v60H120v-120z" fill="none" stroke="#6366f1" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="180" cy="340" r="32" fill="#4f46e5" stroke="#ffffff" stroke-width="12"/>
+  <circle cx="330" cy="340" r="32" fill="#4f46e5" stroke="#ffffff" stroke-width="12"/>
+  <path d="M300 200v60h100" fill="none" stroke="#6366f1" stroke-width="16" stroke-linecap="round"/>
+</svg>
