@@ -13,6 +13,7 @@ import {
   doc,
   setDoc,
   getDocs,
+  getDocFromServer,
   deleteDoc,
   query,
   orderBy
@@ -24,7 +25,23 @@ import { Vehicle, EmailAlertLog, WhatsAppAlertLog } from '../types/fleet';
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const db = (firebaseConfig as any).firestoreDatabaseId 
+  ? getFirestore(app, (firebaseConfig as any).firestoreDatabaseId) 
+  : getFirestore(app);
+
+// Connection test on boot
+async function testFirestoreConnection() {
+  try {
+    const testDoc = doc(db, 'test', 'connection');
+    await getDocFromServer(testDoc);
+    console.log('🔥 Conexão com Firebase Firestore estabelecida com sucesso!');
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('the client is offline')) {
+      console.warn('Verifique sua configuração de conexão com o Firebase.');
+    }
+  }
+}
+testFirestoreConnection();
 
 // Configure Google OAuth Provider with Gmail Scopes
 export const googleProvider = new GoogleAuthProvider();

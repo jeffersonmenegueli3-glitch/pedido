@@ -65,6 +65,7 @@ export const MaintenanceView: React.FC<MaintenanceViewProps> = ({
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('table'); // Default to table as requested
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [selectedOSForDetail, setSelectedOSForDetail] = useState<MaintenanceOrder | null>(null);
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState<boolean>(false);
 
   // Per-Column Filter States
   const [colFilters, setColFilters] = useState({
@@ -271,10 +272,13 @@ export const MaintenanceView: React.FC<MaintenanceViewProps> = ({
 
   const handleBulkDelete = () => {
     if (selectedIds.length === 0) return;
-    if (window.confirm(`Tem certeza que deseja excluir as ${selectedIds.length} ordens de manutenção selecionadas?`)) {
-      onBulkDeleteMaintenances(selectedIds);
-      setSelectedIds([]);
-    }
+    setIsBulkDeleteModalOpen(true);
+  };
+
+  const handleConfirmBulkDelete = () => {
+    onBulkDeleteMaintenances(selectedIds);
+    setSelectedIds([]);
+    setIsBulkDeleteModalOpen(false);
   };
 
   const getPriorityBadge = (p: MaintenancePriority) => {
@@ -1010,6 +1014,61 @@ export const MaintenanceView: React.FC<MaintenanceViewProps> = ({
           onEditOrder={onOpenEditMaintenanceModal}
           onApproveStep={onApproveStep}
         />
+      )}
+
+      {/* Bulk Delete Confirmation Modal */}
+      {isBulkDeleteModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center gap-3 text-rose-400">
+              <div className="p-3 bg-rose-500/10 rounded-2xl border border-rose-500/20">
+                <Trash2 className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-white text-base">Confirmar Exclusão em Massa</h3>
+                <p className="text-xs text-slate-400">Remoção de solicitações de manutenção</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-300">
+              Você selecionou <strong className="text-rose-400 font-bold">{selectedIds.length} ordem(ns) de manutenção</strong> para serem removidas permanentemente do sistema:
+            </p>
+
+            <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs font-mono">
+              {selectedIds.map(id => {
+                const ord = maintenances.find(m => m.id === id);
+                return (
+                  <span key={id} className="px-2 py-1 bg-slate-800 text-amber-300 rounded border border-slate-700 flex items-center gap-1">
+                    <span>#{getOSNumber(ord || { id })}</span>
+                    <span className="text-slate-400">({ord?.placa || 'N/A'})</span>
+                  </span>
+                );
+              })}
+            </div>
+
+            <p className="text-[11px] text-slate-400 bg-rose-950/20 border border-rose-800/30 p-2.5 rounded-xl">
+              ⚠️ Esta ação removerá as ordens selecionadas e recalculará os saldos de orçamento e status dos veículos.
+            </p>
+
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsBulkDeleteModalOpen(false)}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-semibold text-xs transition cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmBulkDelete}
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl font-bold text-xs shadow-lg shadow-rose-600/30 transition flex items-center gap-2 cursor-pointer active:scale-95"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Sim, Excluir {selectedIds.length} Ordem(ns)</span>
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

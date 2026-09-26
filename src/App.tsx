@@ -109,7 +109,7 @@ export default function App() {
   // Theme State (Dark vs Light)
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const saved = localStorage.getItem('fleetmaster_theme');
-    return (saved === 'light' || saved === 'dark') ? saved : 'dark';
+    return (saved === 'light' || saved === 'dark') ? saved : 'light';
   });
 
   useEffect(() => {
@@ -165,13 +165,13 @@ export default function App() {
   };
 
   // Fetch all data from backend
-  const fetchAllData = async () => {
+  const fetchAllData = async (op: string = selectedOperacao) => {
     setIsRefreshing(true);
     try {
       const [vRes, mRes, bRes, sRes, eRes, wRes] = await Promise.all([
         fetch('/api/vehicles'),
         fetch('/api/maintenances'),
-        fetch(`/api/budget?operacao=${encodeURIComponent(selectedOperacao)}`),
+        fetch(`/api/budget?operacao=${encodeURIComponent(op)}`),
         fetch('/api/settings'),
         fetch('/api/email-logs'),
         fetch('/api/whatsapp/logs')
@@ -703,7 +703,7 @@ export default function App() {
       <Header
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        onRefresh={fetchAllData}
+        onRefresh={() => fetchAllData(selectedOperacao)}
         isRefreshing={isRefreshing}
         alert20DaysCount={alert20DaysCount}
         activeTab={activeTab}
@@ -718,6 +718,8 @@ export default function App() {
         onOpenSendWhatsAppModal={() => setIsSendWhatsAppModalOpen(true)}
         theme={theme}
         onToggleTheme={setTheme}
+        selectedOperacao={selectedOperacao}
+        onSelectOperacao={setSelectedOperacao}
       />
 
       <div className="flex flex-1 flex-col lg:flex-row">
@@ -820,6 +822,7 @@ export default function App() {
               budgetData={budgetSummary}
               maintenances={maintenances}
               selectedOperacao={selectedOperacao}
+              onSelectOperacao={setSelectedOperacao}
               onOpenBudgetModal={() => setIsBudgetModalOpen(true)}
             />
           )}

@@ -11,6 +11,16 @@ interface KPICardsProps {
   onSelectOperacao: (operacao: string) => void;
 }
 
+function normalizeBase(baseName?: string): string {
+  if (!baseName) return 'Todas';
+  const clean = baseName.trim().toLowerCase();
+  if (clean === 'rio' || clean === 'rio de janeiro' || clean.includes('rio')) return 'Rio';
+  if (clean === 'interior') return 'Interior';
+  if (clean === 'redespacho') return 'Redespacho';
+  if (clean === 'todas' || clean === 'all') return 'Todas';
+  return baseName;
+}
+
 export const KPICards: React.FC<KPICardsProps> = ({
   vehicles,
   onSelectStatusFilter,
@@ -19,9 +29,10 @@ export const KPICards: React.FC<KPICardsProps> = ({
   onSelectOperacao
 }) => {
   // Filter vehicles dynamically by the selected operation
-  const targetVehicles = !selectedOperacao || selectedOperacao === 'Todas'
+  const targetNorm = normalizeBase(selectedOperacao);
+  const targetVehicles = targetNorm === 'Todas'
     ? vehicles
-    : vehicles.filter((v) => v.base === selectedOperacao);
+    : vehicles.filter((v) => normalizeBase(v.base) === targetNorm);
 
   const total = targetVehicles.length || 1;
   const disponiveis = targetVehicles.filter((v) => v.status === 'Disponível').length;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { MaintenanceOrder } from '../types/fleet';
 import { formatCurrency, formatDateBR } from '../utils/fleetHelpers';
-import { DollarSign, Edit3, AlertTriangle, TrendingUp, CheckCircle, Clock, ShieldAlert } from 'lucide-react';
+import { DollarSign, Edit3, AlertTriangle, TrendingUp, CheckCircle, Clock, ShieldAlert, MapPin } from 'lucide-react';
 
 interface BudgetViewProps {
   budgetData: {
@@ -14,18 +14,31 @@ interface BudgetViewProps {
   };
   maintenances: MaintenanceOrder[];
   selectedOperacao?: string;
+  onSelectOperacao?: (operacao: string) => void;
   onOpenBudgetModal: () => void;
+}
+
+function normalizeBase(baseName?: string): string {
+  if (!baseName) return 'Todas';
+  const clean = baseName.trim().toLowerCase();
+  if (clean === 'rio' || clean === 'rio de janeiro' || clean.includes('rio')) return 'Rio';
+  if (clean === 'interior') return 'Interior';
+  if (clean === 'redespacho') return 'Redespacho';
+  if (clean === 'todas' || clean === 'all') return 'Todas';
+  return baseName;
 }
 
 export const BudgetView: React.FC<BudgetViewProps> = ({
   budgetData,
   maintenances,
   selectedOperacao = 'Todas',
+  onSelectOperacao,
   onOpenBudgetModal
 }) => {
-  const filteredMaintenances = !selectedOperacao || selectedOperacao === 'Todas'
+  const targetNorm = normalizeBase(selectedOperacao);
+  const filteredMaintenances = targetNorm === 'Todas'
     ? maintenances
-    : maintenances.filter(m => m.base === selectedOperacao || (selectedOperacao === 'Rio' && m.base === 'Rio de Janeiro'));
+    : maintenances.filter(m => normalizeBase(m.base) === targetNorm);
 
   // Sort maintenances by highest cost
   const sortedByCost = [...filteredMaintenances].sort((a, b) => (b.valor || 0) - (a.valor || 0));
@@ -43,13 +56,42 @@ export const BudgetView: React.FC<BudgetViewProps> = ({
             <p className="text-xs text-slate-400 mt-1">Sincronização automática com todas as ordens lançadas</p>
           </div>
 
-          <button
-            onClick={onOpenBudgetModal}
-            className="flex items-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm rounded-2xl shadow-lg shadow-indigo-600/30 transition active:scale-95 shrink-0"
-          >
-            <Edit3 className="w-4 h-4" />
-            <span>✏️ ALTERAR ORÇAMENTO</span>
-          </button>
+          <div className="flex items-center gap-3 flex-wrap">
+            {/* Unidade Selector Bar */}
+            {onSelectOperacao && (
+              <div className="flex items-center gap-1 p-1.5 bg-slate-950 border border-slate-800 rounded-2xl">
+                <span className="text-xs text-slate-400 font-bold px-2 flex items-center gap-1">
+                  <MapPin className="w-3.5 h-3.5 text-indigo-400" />
+                  Unidade:
+                </span>
+                {['Todas', 'Rio', 'Interior', 'Redespacho'].map((op) => {
+                  const isSel = selectedOperacao === op || (op === 'Todas' && (!selectedOperacao || selectedOperacao === 'Todas'));
+                  return (
+                    <button
+                      key={op}
+                      type="button"
+                      onClick={() => onSelectOperacao(op)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-black transition cursor-pointer ${
+                        isSel
+                          ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                          : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                      }`}
+                    >
+                      {op === 'Todas' ? '🌐 TODAS' : `📍 ${op.toUpperCase()}`}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            <button
+              onClick={onOpenBudgetModal}
+              className="flex items-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm rounded-2xl shadow-lg shadow-indigo-600/30 transition active:scale-95 shrink-0 cursor-pointer"
+            >
+              <Edit3 className="w-4 h-4" />
+              <span>✏️ ALTERAR ORÇAMENTO</span>
+            </button>
+          </div>
         </div>
 
         {/* 5 Big KPI Metrics */}

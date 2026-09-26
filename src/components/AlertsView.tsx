@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { EmailAlertLog, WhatsAppAlertLog, Vehicle, EmailContact, EmailGroup } from '../types/fleet';
-import { Bell, Mail, Send, ShieldCheck, RefreshCw, UserPlus, Edit3, Trash2, Tag, CheckCircle2, MessageSquare, Phone, Smartphone, Users, FolderPlus, Info } from 'lucide-react';
+import { Bell, Mail, Send, ShieldCheck, RefreshCw, UserPlus, Edit3, Trash2, Tag, CheckCircle2, MessageSquare, Phone, Smartphone, Users, FolderPlus, Info, Bot } from 'lucide-react';
 import { formatPhoneDisplay } from '../utils/whatsapp';
+import { NetlifyRobotModal } from './NetlifyRobotModal';
 
 interface AlertsViewProps {
   emailLogs: EmailAlertLog[];
@@ -36,6 +37,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({
 }) => {
   const [activeLogTab, setActiveLogTab] = useState<'email' | 'whatsapp'>('whatsapp');
   const [activeViewTab, setActiveViewTab] = useState<'contacts' | 'groups'>('groups');
+  const [isNetlifyRobotOpen, setIsNetlifyRobotOpen] = useState<boolean>(false);
 
   return (
     <div className="space-y-6">
@@ -52,6 +54,15 @@ export const AlertsView: React.FC<AlertsViewProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setIsNetlifyRobotOpen(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 text-white font-black text-xs rounded-xl shadow-lg transition cursor-pointer active:scale-95 border border-emerald-400/40 shadow-emerald-500/20"
+            title="Abrir painel e disparar o Robô Netlify de E-mail (enviar-alerta.js)"
+          >
+            <Bot className="w-4 h-4 text-emerald-200 animate-pulse" />
+            <span>🤖 Robô Netlify</span>
+          </button>
+
           <button
             onClick={() => onOpenSendEmailModal('grupo_todos')}
             className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-rose-600 hover:from-indigo-500 hover:to-rose-500 text-white font-black text-xs rounded-xl shadow-lg transition cursor-pointer active:scale-95 ring-2 ring-indigo-400/40 shadow-indigo-500/20"
@@ -455,6 +466,18 @@ export const AlertsView: React.FC<AlertsViewProps> = ({
           </div>
         )}
       </div>
+
+      {/* Netlify Robot Modal */}
+      {isNetlifyRobotOpen && (
+        <NetlifyRobotModal
+          vehicles={vehicles}
+          managerEmail={managerEmail}
+          onClose={() => setIsNetlifyRobotOpen(false)}
+          onAlertSent={() => {
+            if (onCheckAlertsNow) onCheckAlertsNow();
+          }}
+        />
+      )}
     </div>
   );
 };

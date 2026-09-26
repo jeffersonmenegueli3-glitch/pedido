@@ -76,9 +76,20 @@ function loadDataFromDisk() {
 // Restore data from disk on boot
 loadDataFromDisk();
 
+// Helper to normalize base names
+function normalizeBase(baseName?: string): string {
+  if (!baseName) return 'Todas';
+  const clean = baseName.trim().toLowerCase();
+  if (clean === 'rio' || clean === 'rio de janeiro' || clean.includes('rio')) return 'Rio';
+  if (clean === 'interior') return 'Interior';
+  if (clean === 'redespacho') return 'Redespacho';
+  if (clean === 'todas' || clean === 'all') return 'Todas';
+  return baseName;
+}
+
 // Helper to recalculate budget utilization dynamically per operation (base)
 function getBudgetSummary(targetOperacao: string = 'Todas') {
-  const opKey = (!targetOperacao || targetOperacao === 'Todas') ? 'Todas' : targetOperacao;
+  const normTarget = normalizeBase(targetOperacao);
 
   const currentBudgets = budget.budgetsByBase || {
     'Todas': 150000,
@@ -87,22 +98,16 @@ function getBudgetSummary(targetOperacao: string = 'Todas') {
     'Redespacho': 50000
   };
 
-  const orcamentoForOperacao = currentBudgets[opKey] !== undefined ? currentBudgets[opKey] : (currentBudgets['Todas'] || 150000);
+  const orcamentoForOperacao = currentBudgets[normTarget] !== undefined
+    ? currentBudgets[normTarget]
+    : (currentBudgets['Todas'] || 150000);
 
-  const filteredMaintenances = opKey === 'Todas'
+  const filteredMaintenances = normTarget === 'Todas'
     ? maintenances
-    : maintenances.filter(m => {
-        if (!m.base) return false;
-        if (m.base === opKey) return true;
-        if (opKey === 'Rio' && (m.base === 'Rio de Janeiro' || m.base === 'Rio')) return true;
-        return false;
-      });
+    : maintenances.filter(m => normalizeBase(m.base) === normTarget);
 
   const utilized = filteredMaintenances.reduce((acc, curr) => {
-    if (curr.status === 'Concluída' || curr.status === 'Em andamento' || curr.status === 'Atrasada') {
-      return acc + (curr.valor || 0);
-    }
-    return acc;
+    return acc + (curr.valor || 0);
   }, 0);
 
   const saldo = orcamentoForOperacao - utilized;
@@ -110,7 +115,7 @@ function getBudgetSummary(targetOperacao: string = 'Todas') {
   const delayedMaintenancesCount = filteredMaintenances.filter(m => m.status === 'Atrasada').length;
 
   return {
-    operacao: opKey,
+    operacao: normTarget,
     orcamentoMensal: orcamentoForOperacao,
     valorUtilizado: utilized,
     saldoDisponivel: saldo,
@@ -428,8 +433,25 @@ app.post('/api/maintenances/bulk-delete', (req, res) => {
   }
 
   const initialCount = maintenances.length;
+  const deletedOrders = maintenances.filter(m => ids.includes(m.id));
+  const affectedPlacas = Array.from(new Set(deletedOrders.map(m => m.placa)));
+
   maintenances = maintenances.filter(m => !ids.includes(m.id));
   const deletedCount = initialCount - maintenances.length;
+
+  affectedPlacas.forEach(placa => {
+    const remainingOpen = maintenances.filter(
+      m => m.placa === placa && (m.status === 'Aberta' || m.status === 'Em andamento' || m.status === 'Atrasada')
+    );
+    if (remainingOpen.length === 0) {
+      const vIdx = vehicles.findIndex(v => v.placa === placa);
+      if (vIdx !== -1 && vehicles[vIdx].status === 'Em manutenção') {
+        vehicles[vIdx].status = 'Disponível';
+        vehicles[vIdx].dataInicioParada = undefined;
+        vehicles[vIdx].dataEntradaManutencao = undefined;
+      }
+    }
+  });
 
   saveDataToDisk();
   res.json({
@@ -529,17 +551,20 @@ app.put('/api/budget', (req, res) => {
     };
     budget.orcamentoMensal = todas;
   } else if (typeof newBudget === 'number' && newBudget >= 0) {
-    const opKey = operacao || 'Todas';
+    const opKey = normalizeBase(operacao || 'Todas');
     if (!budget.budgetsByBase) {
       budget.budgetsByBase = { 'Todas': 150000, 'Rio': 50000, 'Interior': 50000, 'Redespacho': 50000 };
     }
     budget.budgetsByBase[opKey] = newBudget;
     if (opKey === 'Todas') {
       budget.orcamentoMensal = newBudget;
+    } else {
+      budget.budgetsByBase['Todas'] = (budget.budgetsByBase['Rio'] || 0) + (budget.budgetsByBase['Interior'] || 0) + (budget.budgetsByBase['Redespacho'] || 0);
+      budget.orcamentoMensal = budget.budgetsByBase['Todas'];
     }
   }
 
-  const targetOp = operacao || (req.query.operacao as string) || 'Todas';
+  const targetOp = normalizeBase(operacao || (req.query.operacao as string) || 'Todas');
   saveDataToDisk();
   res.json(getBudgetSummary(targetOp));
 });
@@ -621,6 +646,77 @@ app.post('/api/alerts/check', (req, res) => {
     ...result,
     allLogs: emailLogs,
     allWhatsAppLogs: whatsappLogs
+  });
+});
+
+app.post(['/.netlify/functions/enviar-alerta', '/api/enviar-alerta'], (req, res) => {
+  const body = req.body || {};
+  const alertPlate = (body.alertPlate || body.placa || 'N/A').toString().trim();
+  const daysStopped = Number(body.daysStopped || body.diasParado || 20);
+  const model = (body.model || body.modelo || 'Veículo da Frota').toString().trim();
+  const base = (body.base || 'Geral').toString().trim();
+  const driver = (body.driver || body.motorista || 'Não atribuído').toString().trim();
+  const status = (body.status || 'Parado').toString().trim();
+  const reason = (body.reason || body.motivo || 'Manutenção programada / em verificação').toString().trim();
+  const observations = (body.observations || body.observacoes || 'Verificação urgente necessária.').toString().trim();
+  const subject = body.subject || `🚨 ALERTA OPERACIONAL DE FROTA - Placa ${alertPlate}`;
+
+  const recipientsStr = body.recipients || settings.managerEmail || 'gestao@frota.com.br';
+
+  const corpoFormatted = `🚨 ALERTA OPERACIONAL DE FROTA
+
+Atenção equipe! O veículo ${alertPlate} (${model}) alocado na Base ${base} está parado há ${daysStopped} dias.
+
+📋 Detalhes da Operação:
+• Placa: ${alertPlate}
+• Modelo: ${model}
+• Base/Operação: ${base}
+• Motorista: ${driver}
+• Dias Parado: ${daysStopped} dias
+• Status: ${status}
+• Motivo da Manutenção: ${reason}
+• Observações: ${observations}
+
+⚠️ Ação Necessária: Favor responder com o status atualizado do orçamento ou previsão de liberação.
+
+Enviado por: Gestão de Frota - FleetMaster Pro
+Hora do envio: ${new Date().toLocaleString('pt-BR')}`;
+
+  const newLog: EmailAlertLog = {
+    id: `email-robot-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+    placa: alertPlate,
+    modelo: model,
+    base,
+    motorista: driver,
+    dataInicioParada: new Date().toISOString().split('T')[0],
+    diasParado: daysStopped,
+    statusVeiculo: status,
+    assunto: subject,
+    corpo: corpoFormatted,
+    destinatario: recipientsStr,
+    dataEnvio: new Date().toISOString(),
+    disparadoAutomatico: false
+  };
+
+  emailLogs.unshift(newLog);
+  saveDataToDisk();
+
+  res.json({
+    ok: true,
+    success: true,
+    message: `Robô Netlify enviou e-mail com sucesso para ${recipientsStr}`,
+    sentTo: recipientsStr.split(',').map((s: string) => s.trim()),
+    emailLog: newLog,
+    data: {
+      alertPlate,
+      daysStopped,
+      model,
+      base,
+      driver,
+      status,
+      reason,
+      observations
+    }
   });
 });
 
